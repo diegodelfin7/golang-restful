@@ -5,14 +5,17 @@ import (
 	"html"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-func handle(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello , %q", html.EscapeString(r.URL.Path))
+func main() {
+	r := mux.NewRouter()
+	r.HandleFunc("/", Index)
+
+	log.Fatal(http.ListenAndServe(":8000", r))
 }
 
-func main() {
-	http.HandleFunc("/", handle)
-
-	log.Fatal(http.ListenAndServe(":8000", nil))
+func Index(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello , %q", html.EscapeString(r.URL.Path))
 }
