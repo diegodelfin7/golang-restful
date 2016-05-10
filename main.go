@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"html"
 	"log"
 	"net/http"
 
@@ -12,10 +12,28 @@ import (
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", Index)
+	r.HandleFunc("/todos", TodoIndex)
+	r.HandleFunc("/todos/{todoId}", TodoShow)
 
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello , %q", html.EscapeString(r.URL.Path))
+
+	todos := Todos{
+		Todo{Name: "Write presentation"},
+		Todo{Name: "Host meetup"},
+	}
+
+	json.NewEncoder(w).Encode(todos)
+}
+
+func TodoIndex(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Todo Index!")
+}
+
+func TodoShow(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	todoId := vars["todoId"]
+	fmt.Fprintln(w, "Todo show:", todoId)
 }
